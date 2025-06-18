@@ -1,37 +1,69 @@
-import React, { useState } from 'react';
-import {
-  View, Text, StyleSheet, TextInput, TouchableOpacity, Image, FlatList, ScrollView, SafeAreaView
-} from 'react-native';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
-import lapanganData from '../data/lapangan.json';
+import { useEffect, useState } from 'react';
+import {
+  FlatList,
+  Image,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
+} from 'react-native';
 
-const cities = ["Jakarta", "Bandung", "Surabaya"];
-const filters = ["Terdekat", "Termurah", "Fasilitas Lengkap"];
+const cities = ["Futsal", "Basket", "Tenis", "Badminton"];
+const filters = ["Semua", "Minisocer", "Futsal", "Basket", "Tenis", "Badminton"];
 
 export default function HomeScreen() {
   const [search, setSearch] = useState('');
-  const [selectedCity, setSelectedCity] = useState('Jakarta');
-  const [selectedFilter, setSelectedFilter] = useState('Terdekat');
+  const [selectedCity, setSelectedCity] = useState('Futsal');
+  const [selectedFilter, setSelectedFilter] = useState('Semua');
+  const [recommended, setRecommended] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const recommended = lapanganData;
+  useEffect(() => {
+    fetch('http://10.1.7.97:4000/lapangan')
+      .then(response => response.json())
+      .then(data => {
+        setRecommended(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        setRecommended([]);
+        setLoading(false);
+      });
+  }, []);
+
+  // Filter & Search
+  const getFilteredData = () => {
+    let data = [...recommended];
+
+    if (selectedFilter !== 'Semua') {
+      data = data.filter(item => item.jenis && item.jenis.toLowerCase() === selectedFilter.toLowerCase());
+    }
+    if (search.trim() !== '') {
+      data = data.filter(item => item.nama.toLowerCase().includes(search.toLowerCase()));
+    }
+    return data;
+  };
 
   const renderLapangan = ({ item }) => (
     <View style={styles.card}>
       <View>
         <Image source={{ uri: item.gambar }} style={styles.cardImage} />
         <View style={styles.distanceBadge}>
-          <Text style={styles.distanceText}>1.6 km</Text>
+          <Text style={styles.distanceText}>{item.jenis || 'Lapangan'}</Text>
         </View>
       </View>
-      <View style={{ padding: 10 }}>
+      <View style={{ padding: 8 }}>
         <Text style={styles.lapanganName}>{item.nama}</Text>
         <Text style={styles.lapanganAlamat}>{item.lokasi}</Text>
         <View style={styles.rowCenter}>
-          <Ionicons name="star" size={16} color="#FFC529" />
+          <Ionicons name="star" size={14} color="#FFC529" />
           <Text style={styles.ratingText}>4.2</Text>
           <Text style={styles.ratingCount}>(40)</Text>
         </View>
-        <Text style={styles.priceText}>300k/jam</Text>
+        <Text style={styles.priceText}>{item.harga ? `${item.harga}/jam` : '300k/jam'}</Text>
       </View>
     </View>
   );
@@ -40,21 +72,21 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
-          <Image source={{ uri: 'https://randomuser.me/api/portraits/men/32.jpg' }} style={styles.avatar} />
+          <Image source={{ uri: 'https://randomuser.me/api/portraits/men/1.jpg' }} style={styles.avatar} />
           <View>
-            <Text style={styles.haloText}>Halo, Alfan</Text>
+            <Text style={styles.haloText}>Halo, Abi</Text>
           </View>
         </View>
         <TouchableOpacity style={styles.notifBtn}>
           <Ionicons name="notifications-outline" size={26} color="#fff" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.bigTitle}>Mau main dimana?{'\n'}Temukan lapangan favoritmu</Text>
+      <Text style={styles.bigTitle}>Hari ini mau olahraga dimana?{'\n'}</Text>
       <View style={styles.searchRow}>
         <View style={styles.searchBox}>
           <Ionicons name="search" size={20} color="#A1A1A1" style={{ marginRight: 8 }} />
           <TextInput
-            placeholder="Cari Lapangan di Jakarta"
+            placeholder="Mau Olahraga Apa?"
             placeholderTextColor="#A1A1A1"
             style={{ flex: 1, fontSize: 15, color: '#fff' }}
             value={search}
@@ -66,7 +98,6 @@ export default function HomeScreen() {
           <MaterialIcons name="keyboard-arrow-down" size={20} color="#fff" />
         </TouchableOpacity>
       </View>
-      {/* Filter Chips */}
       <View style={styles.filterRow}>
         {filters.map(f => (
           <TouchableOpacity
@@ -75,8 +106,7 @@ export default function HomeScreen() {
               styles.filterChip,
               selectedFilter === f && styles.filterChipActive
             ]}
-            onPress={() => setSelectedFilter(f)}
-          >
+            onPress={() => setSelectedFilter(f)}>
             <Text style={[
               styles.filterChipText,
               selectedFilter === f && styles.filterChipTextActive
@@ -84,42 +114,40 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ))}
       </View>
-      {/* Recommended */}
       <View style={styles.rekomenRow}>
-        <Text style={styles.rekomenTitle}>Rekomendasi untuk kamu</Text>
+        <Text style={styles.seeAll}>Rekomendasi untuk kamu</Text>
         <TouchableOpacity>
           <Text style={styles.seeAll}>Lihat Semua</Text>
         </TouchableOpacity>
       </View>
-      <FlatList
-        data={recommended}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        renderItem={renderLapangan}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={{ paddingLeft: 18, paddingBottom: 12 }}
-      />
-      {/* Bottom Navigation (Dummy) */}
+      {loading ? (
+        <Text style={{ color: '#fff', textAlign: 'center', marginTop: 20 }}>Loading...</Text>
+      ) : (
+        <FlatList
+          data={getFilteredData()}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={renderLapangan}
+          keyExtractor={item => item.id.toString()}
+          contentContainerStyle={{ paddingLeft: 20, paddingBottom: 0, paddingTop: 8, marginBottom: 160 }}
+        />
+      )}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.navBtn}>
           <Ionicons name="home" size={24} color="#FFC529" />
           <Text style={{ color: '#FFC529', fontSize: 12 }}>Beranda</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navBtn}>
-          <Ionicons name="grid-outline" size={22} color="#858585" />
-          <Text style={styles.navText}>Lapangan</Text>
+          <Ionicons name="time-outline" size={22} color="#858585" />
+          <Text style={styles.navText}>History</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navBtn}>
-          <Ionicons name="trophy-outline" size={22} color="#858585" />
-          <Text style={styles.navText}>Liga</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.navBtn}>
-          <Ionicons name="book-outline" size={22} color="#858585" />
-          <Text style={styles.navText}>Pemesanan</Text>
+          <Ionicons name="card-outline" size={22} color="#858585" />
+          <Text style={styles.navText}>Payment</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.navBtn}>
           <Ionicons name="person-outline" size={22} color="#858585" />
-          <Text style={styles.navText}>Profil</Text>
+          <Text style={styles.navText}>Profile</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -144,7 +172,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#23225C', borderRadius: 12, marginLeft: 10, paddingHorizontal: 15, height: 44,
   },
   cityBtnText: { color: '#fff', fontSize: 15, fontWeight: '500', marginRight: 4 },
-  filterRow: { flexDirection: 'row', marginLeft: 20, marginBottom: 8 },
+  filterRow: { flexDirection: 'row', marginLeft: 20, marginBottom: 10 },
   filterChip: {
     backgroundColor: '#F4F4F4', paddingHorizontal: 18, paddingVertical: 7,
     borderRadius: 18, marginRight: 10
@@ -156,11 +184,11 @@ const styles = StyleSheet.create({
   rekomenTitle: { color: '#181743', fontSize: 16, fontWeight: 'bold' },
   seeAll: { color: '#727272', fontSize: 13, fontWeight: '500' },
   card: {
-    width: 200, backgroundColor: '#fff', borderRadius: 18, marginRight: 14,
+    width: 210, backgroundColor: '#fff', borderRadius: 19, marginRight: 14,
     shadowColor: '#23225C', shadowOpacity: 0.07, shadowOffset: { width: 0, height: 2 }, shadowRadius: 7,
-    marginVertical: 8, overflow: 'hidden'
+    marginVertical: 12, overflow: 'hidden'
   },
-  cardImage: { width: '100%', height: 110, borderTopLeftRadius: 18, borderTopRightRadius: 18 },
+  cardImage: { width: '100%', height: 130, borderTopLeftRadius: 18, borderTopRightRadius: 18 },
   distanceBadge: {
     position: 'absolute', top: 10, right: 10, backgroundColor: '#FFC529',
     paddingHorizontal: 8, paddingVertical: 2, borderRadius: 12, zIndex: 2
@@ -175,7 +203,7 @@ const styles = StyleSheet.create({
   bottomNav: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     backgroundColor: '#fff', borderTopLeftRadius: 22, borderTopRightRadius: 22,
-    height: 56, paddingHorizontal: 18, position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 15
+    height: 75, paddingHorizontal: 18, position: 'absolute', left: 0, right: 0, bottom: 0, elevation: 15
   },
   navBtn: { alignItems: 'center', flex: 1 },
   navText: { color: '#858585', fontSize: 12, marginTop: 1 }

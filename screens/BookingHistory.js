@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, SafeAreaView, TouchableOpacity } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MaterialCommunityIcons, Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
+import { FlatList, SafeAreaView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function BookingHistory() {
   const [bookings, setBookings] = useState([]);

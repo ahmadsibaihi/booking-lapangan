@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "nama": "Lapangan Futsal GOR A",
+    "lokasi": "Jl. Merdeka No.10",
+    "gambar": "https://picsum.photos/300/200?random=1"
+  },
+  {
+    "id": 2,
+    "nama": "Lapangan Badminton B",
+    "lokasi": "Jl. Sudirman No.15",
+    "gambar": "https://picsum.photos/300/200?random=2"
+  },
+  {
+    "id": 3,
+    "nama": "Lapangan Basket C",
+    "lokasi": "Jl. Diponegoro No.20",
+    "gambar": "https://picsum.photos/300/200?random=3"
+  }
+]

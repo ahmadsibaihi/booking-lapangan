@@ -27,10 +27,10 @@ export default function BookingHistory() {
         {/* Header Section */}
         <View style={styles.cardHeader}>
           <Text style={styles.venueName}>{item.lokasi}</Text>
-          <TouchableOpacity style={styles.chatBtn}>
-            <Text style={styles.chatBtnText}>Chat Penyewa</Text>
-            <View style={styles.redDot} />
-          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.chatBtn}> */}
+            {/* <Text style={styles.chatBtnText}>Chat Penyewa</Text> */}
+            {/* <View style={styles.redDot} /> */}
+          {/* </TouchableOpacity> */}
         </View>
         {/* Main Info */}
         <View style={styles.cardMain}>
@@ -42,7 +42,7 @@ export default function BookingHistory() {
         </View>
         {/* Footer */}
         <TouchableOpacity>
-          <Text style={styles.eticketText}>Lihat E-Tiket</Text>
+          {/* <Text style={styles.eticketText}>Lihat E-Tiket</Text> */}
         </TouchableOpacity>
       </View>
     </View>

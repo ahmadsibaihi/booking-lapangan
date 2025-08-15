@@ -1,21 +1,53 @@
 {
   "expo": {
     "name": "booking-lapangan",
+    "owner": "ahmadsyibaihi",
     "slug": "booking-lapangan",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "/assets/icon.png",
     "scheme": "bookinglapangan",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.syibaihi.bookinglapangan",
+      "buildNumber": "1.0.0",
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "bookinglapangan"
+            ]
+          }
+        ]
+      },
+      "appStoreId": "200705"
     },
     "android": {
+      "package": "com.syibaihi.bookinglapangan", 
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "googleServicesFile": "./google-services.json",
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "data": [
+            {
+              "scheme": "bookinglapangan",
+              "host": "oauth2redirect",
+              "pathPrefix": "/google"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ],
       "edgeToEdgeEnabled": true
     },
     "web": {
